@@ -297,4 +297,4 @@ WeChat Pay：
 
 ## ⏰ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=P1kaj1uu/VIP-Video-Parsing&type=Timeline)](https://star-history.com/#P1kaj1uu/VIP-Video-Parsing&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=P1kaj1uu/ChattyPlay-Agent&type=Timeline)](https://star-history.com/#P1kaj1uu/ChattyPlay-Agent&Timeline)
