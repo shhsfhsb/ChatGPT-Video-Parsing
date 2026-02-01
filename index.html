@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/public/icon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChattyPlay</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Fundebug 错误监控 -->
+    <script async src="https://js.fundebug.cn/fundebug.2.8.8.min.js"></script>
+    <!-- Fundebug 录屏插件 -->
+    <script async src="https://js.fundebug.cn/fundebug.revideo.0.8.0.min.js"></script>
+    <script>
+      // 配置 Fundebug
+      fundebug.apikey = 'fa-0aa5a027de384efbb4dc8a456c863526'
+      fundebug.appversion = '1.0.0'
+
+      // 全局错误监听
+      // 监听未捕获的 Promise 错误
+      window.addEventListener('unhandledrejection', function (event) {
+        fundebug.notifyError(event.reason, {
+          metaData: {
+            type: 'unhandledrejection'
+          }
+        })
+      })
+
+      // 监听全局错误
+      window.addEventListener('error', function (event) {
+        fundebug.notifyError(event.error || new Error(event.message), {
+          metaData: {
+            type: 'global error',
+            filename: event.filename,
+            lineno: event.lineno,
+            colno: event.colno
+          }
+        })
+      })
+    </script>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
