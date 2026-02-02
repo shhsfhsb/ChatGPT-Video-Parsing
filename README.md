@@ -12,7 +12,7 @@
 
 ## 🚀 在线体验
 
-- 体验地址：<a href="http://igdragon.tttttttttt.top" target="_blank">在线体验</a>
+- 体验地址：<a href="http://igdragon.tttttttttt.top" target="_blank">在线体验</a>（服务器带宽低，访问可能略有卡顿，敬请谅解）
 - 视频预览：<a href="https://www.bilibili.com/video/BV1bK68BwEJL/?spm_id_from=333.1387.homepage.video_card.click&vd_source=fb04ac71255b4cf04fe2e461b7cee116" target="_blank">录频视频</a>
 - 备注：如使用ChatGPT服务，我的APIKey配额有限，希望大家能省点用谢谢！
 
@@ -38,7 +38,7 @@
 - v2.8版本优化加载效果，增加网站访问次数统计和版本更新提醒用户功能（2023.5.26-2023.5.27）
 - v2.9版本整体优化代码，修复bug，并抽离封装部分函数和组件，降低复杂度，实现高内聚低耦合（2023.6.10-2023.6.20）
 - v3.0全新版本上线，优化markdown代码块格式，并接入文生图、亚马逊爬虫服务，发布浏览器插件（2023.7.24-2023.8.13）
-- v4.0重构项目完成，修改相关的bug，页面结构样式重新设计，增加动漫漫画功能，优化用户体验，并完成移动端和PC端的适配，接入SDK、MCP、Agent等服务，同时系统整体架构将Vue2替换为React + TypeScript + Vite + Tailwind CSS + i18n国际化 + live2d看板娘 + nginx + Docker容器化管理（2025.12.16-2026.2.2）
+- v4.0重构项目完成，修改相关的bug，页面结构样式重新设计，增加动漫漫画功能，优化用户体验，并完成移动端和PC端的适配，接入SDK、MCP、Agent等服务，同时系统整体架构将Vue2替换为React + TypeScript + Vite + Tailwind CSS + i18n国际化 + live2d看板娘 + nginx + Docker容器化管理（2025.12.16-2026.2.5）
 
 ## 最新版本V4.0（推荐）
 

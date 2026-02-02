@@ -45,6 +45,11 @@ const AppContent: React.FC = () => {
 
   // 路由守卫：检查是否登录
   useEffect(() => {
+    // 如果已登录且在登录页，跳转到首页
+    if (publicRoutes.includes(location.pathname) && isAuthenticated()) {
+      navigate('/home', { replace: true })
+      return
+    }
     // 如果不是公开路由且未登录，则跳转到登录页
     if (!publicRoutes.includes(location.pathname) && !isAuthenticated()) {
       navigate('/', { replace: true })

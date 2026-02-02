@@ -272,8 +272,9 @@ const Login: React.FC = () => {
     localStorage.setItem('isLoggedIn', 'true')
     localStorage.setItem('username', '游客')
     message.success(t('login.guestLoginSuccess'))
-    // 显示心跳动画
-    setShowHeartBeat(true)
+    // 游客访问不显示心跳动画，直接跳转到首页
+    setShowHeartBeat(false)
+    handleHeartBeatComplete()
   }
 
   const handleHeartBeatComplete = () => {
