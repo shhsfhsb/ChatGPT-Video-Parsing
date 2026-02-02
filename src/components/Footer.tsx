@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
       <FooterContent>
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
           <Text style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-             <span id="busuanzi_container_site_pv">{t('common.siteVisits')}<span id="busuanzi_value_site_pv"></span>{t('common.visitsUnit')}</span>
+             <span id="busuanzi_container_site_pv">{t('common.siteVisits')}<span id="busuanzi_value_site_pv">258341</span>{t('common.visitsUnit')}</span>
           </Text>
           <Text style={{ color: 'rgba(255, 255, 255, 0.8)', marginLeft: '20px' }}>
              <span>{t('common.copyright')}</span>

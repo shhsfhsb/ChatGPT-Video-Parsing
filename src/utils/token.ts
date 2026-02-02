@@ -3,7 +3,7 @@
  * 用于管理用户登录状态的 token
  */
 
-const TOKEN_KEY = 'chattyPlay';
+const TOKEN_KEY = 'chattyplay-token';
 
 /**
  * 生成随机 token
