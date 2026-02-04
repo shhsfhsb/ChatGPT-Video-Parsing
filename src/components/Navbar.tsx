@@ -12,7 +12,8 @@ import {
   LogoutOutlined,
   MenuOutlined,
   ReadOutlined,
-  GlobalOutlined
+  GlobalOutlined,
+  GoldOutlined
 } from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -157,10 +158,11 @@ const Navbar: React.FC = () => {
 
   const menuItems = [
     { key: '/home', label: t('nav.home'), icon: <HomeOutlined /> },
+    { key: '/cartoon', label: t('nav.cartoon'), icon: <ReadOutlined /> },
     { key: '/gpt', label: t('nav.chatgpt'), icon: <MessageOutlined /> },
     { key: '/video', label: t('nav.video'), icon: <VideoCameraOutlined /> },
     { key: '/music', label: t('nav.music'), icon: <SoundOutlined /> },
-    { key: '/cartoon', label: t('nav.cartoon'), icon: <ReadOutlined /> },
+    { key: '/gold', label: t('nav.gold'), icon: <GoldOutlined /> },
     { key: '/trans', label: t('nav.trans'), icon: <TranslationOutlined /> },
     { key: '/text-to-photo', label: t('nav.textToPhoto'), icon: <PictureOutlined /> },
     { key: '/about', label: t('nav.about'), icon: <UserOutlined /> }

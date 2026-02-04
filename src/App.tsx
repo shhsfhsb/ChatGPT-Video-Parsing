@@ -12,6 +12,7 @@ import Music from './pages/Music'
 import Cartoon from './pages/Cartoon'
 import CartoonDetail from './pages/CartoonDetail'
 import CartoonChapter from './pages/CartoonChapter'
+import Gold from './pages/Gold'
 import Trans from './pages/Trans'
 import TextToPhoto from './pages/TextToPhoto'
 import Help from './pages/Help'
@@ -172,6 +173,7 @@ const AppContent: React.FC = () => {
           <Route path="/cartoon" element={<Cartoon />} />
           <Route path="/cartoon/:id" element={<CartoonDetail />} />
           <Route path="/cartoon/chapter/:comicId" element={<CartoonChapter />} />
+          <Route path="/gold" element={<Gold />} />
           <Route path="/trans" element={<Trans />} />
           <Route path="/text-to-photo" element={<TextToPhoto />} />
           <Route path="/help" element={<Help />} />
