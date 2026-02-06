@@ -23,7 +23,7 @@ interface HeartBeatProps {
 
 const HeartBeat: React.FC<HeartBeatProps> = ({ onComplete }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const timerRef = useRef<NodeJS.Timeout>()
+  const timerRef = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => {
     if (!containerRef.current) return
