@@ -31,4 +31,5 @@ export default {
   loadError: 'Failed to load daily papers. Please try again later',
   hotApiError: 'Hot paper API returns data in an unexpected format',
   hotLoadError: 'Failed to load hot papers. Please try again later',
+  paper: 'Paper',
 }
