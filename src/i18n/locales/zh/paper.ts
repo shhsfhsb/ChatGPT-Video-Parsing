@@ -31,4 +31,5 @@ export default {
   loadError: '加载每日论文失败，请稍后重试',
   hotApiError: '热门论文API返回的数据格式不符合预期',
   hotLoadError: '加载热门数据失败，请稍后重试',
+  paper: '论文',
 }

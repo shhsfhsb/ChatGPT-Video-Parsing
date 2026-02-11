@@ -202,7 +202,7 @@ const PaperListPage: React.FC = () => {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [repoTypeFilter, setRepoTypeFilter] = useState<string>('all');
 
-  const API_PAPERS_URL = import.meta.env.VITE_PAPERS_API_URL || 'https://huggingface.co/api'
+  const API_PAPERS_URL = import.meta.env.VITE_PAPERS_API_URL || 'https://hf-mirror.com/api'
 
   // 获取每日论文数据
   const fetchDailyPapers = async () => {
@@ -260,7 +260,7 @@ const PaperListPage: React.FC = () => {
           const generateThumbnail = (id: string) => {
             const parts = id.split('/')
             if (parts.length >= 2) {
-              return `https://huggingface.co/front/thumbnails/${parts[0]}/${parts[1]}.png`
+              return `https://hf-mirror.com/front/thumbnails/${parts[0]}/${parts[1]}.png`
             }
             return undefined
           }
@@ -400,7 +400,7 @@ const PaperListPage: React.FC = () => {
         icon: <LinkOutlined />,
         // 如果是daily paper，https://huggingface.co/papers/${paper.id}
         // 如果是trending paper，如果是数据集：https://huggingface.co/datasets/${paper.id}，如果是应用：https://huggingface.co/spaces/${paper.id}，如果是模型：https://huggingface.co/${paper.id}
-        href: activeTab === 'daily' ? `https://huggingface.co/papers/${paper.id}` : (paper.repoType === 'dataset' ? `https://huggingface.co/datasets/${paper.id}` : (paper.repoType === 'space' ? `https://huggingface.co/spaces/${paper.id}` : `https://huggingface.co/${paper.id}`)),
+        href: activeTab === 'daily' ? `https://hf-mirror.com/papers/${paper.id}` : (paper.repoType === 'dataset' ? `https://hf-mirror.com/datasets/${paper.id}` : (paper.repoType === 'space' ? `https://huggingface.co/spaces/${paper.id}` : `https://hf-mirror.com/${paper.id}`)),
         tooltip: t('paper.showDetail'),
         type: 'primary' as const
       })
@@ -618,11 +618,11 @@ const PaperListPage: React.FC = () => {
                               icon={typeTag.icon}
                               className="text-xs"
                             >
-                              {typeTag.text}
+                              {activeTab === 'daily' ? t('paper.paper') : typeTag.text}
                             </Tag>
                             
                             {/* 点赞数 */}
-                            {paper.upvotes > 20 && (
+                            {paper.upvotes >= 1 && (
                               <Badge
                                 count={`🔥 ${formatNumber(paper.upvotes)}`}
                                 style={{ 
@@ -637,9 +637,22 @@ const PaperListPage: React.FC = () => {
                           </div>
                         </div>
 
+                        {/* 关键词 */}
+                          {paper.ai_keywords && paper.ai_keywords.length > 0 && (
+                            <div className="flex items-center overflow-auto mb-2" style={{ scrollbarWidth: 'none' }}>
+                              {
+                                paper.ai_keywords.map((keyword, index) => (
+                                  <Tag key={index} color="cyan" className="text-xs">
+                                    {keyword}
+                                  </Tag>
+                                ))
+                              }
+                            </div>
+                          )}
+
                         {/* 摘要/描述 */}
                         <p className="text-gray-600 text-sm mb-2 line-clamp-2 leading-relaxed">
-                          {paper.ai_summary || paper.summary}
+                          {paper.summary ||paper.ai_summary}
                         </p>
 
                         {/* 元信息行 */}
