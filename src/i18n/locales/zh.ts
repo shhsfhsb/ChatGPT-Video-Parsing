@@ -16,6 +16,7 @@ import textToPhoto from './zh/textToPhoto'
 import notFound from './zh/notFound'
 import gold from './zh/gold'
 import help from './zh/help'
+import goofish from './zh/goofish'
 
 export default {
   translation: {
@@ -36,6 +37,7 @@ export default {
     textToPhoto,
     notFound,
     gold,
-    help
+    help,
+    goofish
   }
 }

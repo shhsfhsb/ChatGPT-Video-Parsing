@@ -30,7 +30,7 @@ import { accountApi } from '@/services/goofish'
 import type { Account } from '@/types/goofish'
 
 const { TextArea } = Input
-const { Text, Title } = Typography
+const { Text } = Typography
 
 const Accounts: React.FC = () => {
   const { status, refetchStatus } = useGoofishWebSocket({
@@ -273,8 +273,6 @@ const Accounts: React.FC = () => {
 
   return (
     <div>
-      <Title level={2}>账号管理</Title>
-
       {/* 账号列表 */}
       <Card style={{ marginBottom: 16 }}>
         <Table

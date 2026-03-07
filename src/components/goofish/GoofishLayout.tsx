@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Layout, Menu, theme, Button, Typography, Space } from 'antd'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   DashboardOutlined,
   UserOutlined,
@@ -19,6 +20,7 @@ const { Title } = Typography
 
 const GoofishLayout: React.FC = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -41,20 +43,20 @@ const GoofishLayout: React.FC = () => {
   }, [])
 
   const menuItems = [
-    { key: '/goofish', icon: <DashboardOutlined />, label: '闲鱼数据' },
-    { key: '/goofish/accounts', icon: <UserOutlined />, label: '账号管理' },
-    { key: '/goofish/conversations', icon: <MessageOutlined />, label: '对话管理' },
-    { key: '/goofish/orders', icon: <ShoppingOutlined />, label: '订单管理' },
-    { key: '/goofish/goods', icon: <ShoppingOutlined />, label: '商品管理' },
-    { key: '/goofish/autoreply', icon: <RobotOutlined />, label: '自动回复' },
-    { key: '/goofish/autosell', icon: <ShoppingOutlined />, label: '自动发货' },
-    { key: '/goofish/workflow', icon: <BranchesOutlined />, label: '工作流图' },
-    { key: '/goofish/logs', icon: <FileTextOutlined />, label: '系统日志' }
+    { key: '/goofish', icon: <DashboardOutlined />, label: t('goofish.data') },
+    { key: '/goofish/accounts', icon: <UserOutlined />, label: t('goofish.accounts') },
+    { key: '/goofish/conversations', icon: <MessageOutlined />, label: t('goofish.conversations') },
+    { key: '/goofish/orders', icon: <ShoppingOutlined />, label: t('goofish.orders') },
+    { key: '/goofish/goods', icon: <ShoppingOutlined />, label: t('goofish.goods') },
+    { key: '/goofish/autoreply', icon: <RobotOutlined />, label: t('goofish.autoreply') },
+    { key: '/goofish/autosell', icon: <ShoppingOutlined />, label: t('goofish.autosell') },
+    { key: '/goofish/workflow', icon: <BranchesOutlined />, label: t('goofish.workflow') },
+    { key: '/goofish/logs', icon: <FileTextOutlined />, label: t('goofish.logs') }
   ]
 
   const getPageTitle = () => {
     const item = menuItems.find(m => m.key === location.pathname)
-    return item?.label || '闲鱼管理'
+    return item?.label || t('goofish.assistant')
   }
 
   const handleMenuClick = ({ key }: { key: string }) => {
@@ -187,7 +189,7 @@ const GoofishLayout: React.FC = () => {
             <Space>
               <ShoppingOutlined style={{ fontSize: isMobile ? 18 : 22, color: '#1890ff' }} />
               <Title level={4} style={{ color: '#333', margin: 0, fontSize: isMobile ? 14 : 15 }}>
-                闲鱼管理
+                {t('goofish.assistant')}
               </Title>
             </Space>
           )}
@@ -267,7 +269,7 @@ const GoofishLayout: React.FC = () => {
             onClick={() => navigate('/home')}
             style={{ fontSize: isMobile ? 13 : 14 }}
           >
-            {isMobile ? '' : '返回首页'}
+            {isMobile ? '' : t('goofish.home')}
           </Button>
         </Header>
 

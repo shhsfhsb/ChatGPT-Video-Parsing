@@ -12,7 +12,8 @@ const nav = {
   login: 'Login',
   logout: 'Logout',
   language: 'Language',
-  navigationMenu: 'Navigation Menu'
+  navigationMenu: 'Navigation Menu',
+  goofish: 'Goofish'
 }
 
 export default nav

@@ -10,6 +10,7 @@ import {
   ReadOutlined,
   BookOutlined,
   GoldOutlined,
+  AndroidOutlined,
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -189,6 +190,12 @@ const Home: React.FC = () => {
       description: t('home.features.papers.description'),
       icon: <BookOutlined />,
       path: '/papers'
+    },
+    {
+      title: t('home.features.goofish.title'),
+      description: t('home.features.goofish.description'),
+      icon: <AndroidOutlined />,
+      path: '/goofish'
     },
     {
       title: t('home.features.chatgpt.title'),

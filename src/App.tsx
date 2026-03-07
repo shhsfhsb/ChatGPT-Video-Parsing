@@ -40,6 +40,9 @@ import { scrollToTop } from './utils/backTop'
 // 公开路由
 const publicRoutes = ['/']
 
+// 限制闲鱼路由
+const goofishRoutes = ['/goofish', '/goofish/accounts', '/goofish/conversations', '/goofish/orders', '/goofish/goods', '/goofish/autoreply', '/goofish/autosell', '/goofish/workflow', '/goofish/logs']
+
 // 配置 NProgress
 NProgress.configure({
   minimum: 0.1,
@@ -60,6 +63,16 @@ const AppContent: React.FC = () => {
 
   // 路由守卫：检查是否登录
   useEffect(() => {
+    // 如果生产环境下访问闲鱼相关路且已登录，重定向到首页
+    if (process.env.NODE_ENV === 'production' && goofishRoutes.includes(location.pathname) && isAuthenticated()) {
+      navigate('/home', { replace: true })
+      return
+    }
+     // 如果生产环境下访问闲鱼相关路且未登录，重定向到登录页
+    if (process.env.NODE_ENV === 'production' && goofishRoutes.includes(location.pathname) && !isAuthenticated()) {
+      navigate('/', { replace: true })
+      return
+    }
     // 如果已登录且在登录页，跳转到首页
     if (publicRoutes.includes(location.pathname) && isAuthenticated()) {
       navigate('/home', { replace: true })

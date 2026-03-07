@@ -38,6 +38,10 @@ export default {
       title: 'Real-time Gold',
       description: 'Real-time gold price and k-line chart, helping you make trading decisions'
     },
+    goofish: {
+      title: 'Goofish Assistant',
+      description: 'Provides automatic trading, automatic reply, automatic monitoring and other functions on the Goofish platform, helping you easily buy and sell second-hand items'
+    }
   },
   footer: {
     slogan: '💗 The future is promising 💗',

@@ -38,6 +38,10 @@ const home = {
       title: '实时黄金',
       description: '实时获取黄金价格和k线图，帮助您进行交易决策'
     },
+    goofish: {
+      title: '闲鱼助手',
+      description: '提供闲鱼平台的自动交易、自动回复、自动监控等功能，助您轻松买卖二手物品'
+    }
   },
   footer: {
     slogan: '💗 来日方长，未来可期 💗',
