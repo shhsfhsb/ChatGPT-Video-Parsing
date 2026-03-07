@@ -163,10 +163,10 @@ const Navbar: React.FC = () => {
     { key: '/papers', label: t('nav.paper'), icon: <BookOutlined /> },
     // 如果是生产环境，不显示闲鱼菜单项
     ...(process.env.NODE_ENV === 'production' ? [] : [{ key: '/goofish', label: t('nav.goofish'), icon: <AndroidOutlined /> }]),
-    { key: '/gpt', label: t('nav.chatgpt'), icon: <MessageOutlined /> },
     { key: '/video', label: t('nav.video'), icon: <VideoCameraOutlined /> },
     { key: '/music', label: t('nav.music'), icon: <SoundOutlined /> },
     { key: '/gold', label: t('nav.gold'), icon: <GoldOutlined /> },
+    { key: '/gpt', label: t('nav.chatgpt'), icon: <MessageOutlined /> },
     { key: '/text-to-photo', label: t('nav.textToPhoto'), icon: <PictureOutlined /> },
     { key: '/about', label: t('nav.about'), icon: <UserOutlined /> }
   ]
