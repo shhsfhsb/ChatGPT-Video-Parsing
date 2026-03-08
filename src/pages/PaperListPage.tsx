@@ -25,6 +25,7 @@ import {
   getHardwareTag 
 } from '@/utils/paper'
 import { useTranslation } from 'react-i18next'
+import { isMobileDevice } from '@/utils/isMobile'
 import axios from 'axios'
 interface AuthorData {
   _id: string;
@@ -174,7 +175,7 @@ interface PaperDetail {
   downloads?: number;
   numParameters?: number;
   lastModified: string;
-  repoType: 'model' | 'dataset' | 'space';
+  repoType: 'model' | 'dataset' | 'space' | 'paper';
   shortDescription?: string;
   ai_category?: string;
   datasetsServerInfo?: {
@@ -389,6 +390,8 @@ const PaperListPage: React.FC = () => {
         return { icon: <DatabaseOutlined />, color: 'green', text: t('paper.dataset') }
       case 'space':
         return { icon: <CodeOutlined />, color: 'purple', text: t('paper.application') }
+      case 'paper':
+        return { icon: <FilePdfOutlined />, color: 'orange', text: t('paper.paper') }
       default:
         return { icon: null, color: 'default', text: t('paper.unknown') }
     }
@@ -396,10 +399,22 @@ const PaperListPage: React.FC = () => {
 
   // 处理PDF预览
   const handlePdfPreview = (pdfUrl: string, paperTitle: string) => {
-    setCurrentPdfUrl(pdfUrl)
-    setCurrentPaperTitle(paperTitle)
-    setPdfModalVisible(true)
-  };
+    if (isMobileDevice()) {
+      let viewerUrl = ''
+      try {
+        viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`
+      } catch (error) {
+        viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`
+      }
+      setCurrentPdfUrl(viewerUrl)
+      setCurrentPaperTitle(paperTitle)
+      setPdfModalVisible(true)
+    } else {
+      setCurrentPdfUrl(pdfUrl)
+      setCurrentPaperTitle(paperTitle)
+      setPdfModalVisible(true)
+    }
+  }
 
   // 关闭PDF弹窗
   const handlePdfModalClose = () => {
@@ -471,11 +486,6 @@ const PaperListPage: React.FC = () => {
     }
     
     return links
-  }
-
-  // 检测是否为移动端设备
-  const isMobileDevice = () => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   }
 
   // 筛选论文
@@ -601,6 +611,9 @@ const PaperListPage: React.FC = () => {
           ) : filteredPapers.length > 0 ? (
             <div className="space-y-3">
               {filteredPapers.map((paper, index) => {
+                if (activeTab === 'daily') {
+                  paper.repoType = 'paper'
+                }
                 const typeTag = getTypeTag(paper.repoType);
                 const isTrending = activeTab === 'trending';
                 const allLinks = getAllLinks(paper);
@@ -710,8 +723,8 @@ const PaperListPage: React.FC = () => {
                                 className="mr-1"
                               />
                               <span className="font-medium text-gray-700">
-                                {getAuthorDataName(paper.authorData) || 
-                                 getAuthorNames(paper.authors) || 
+                                {getAuthorNames(paper.authors) || 
+                                 getAuthorDataName(paper.authorData) || 
                                  getOrganizationName(paper.organization)}
                               </span>
                             </div>
@@ -795,17 +808,16 @@ const PaperListPage: React.FC = () => {
                               // 如果是flag为true的链接，显示PDF预览按钮
                               if (link.flag) {
                                 return (
-                                  <Tooltip key={link.key} title="PDF">
-                                    <Button
-                                      type="default"
-                                      size="small"
-                                      icon={<FilePdfOutlined />}
-                                      onClick={() => handlePdfPreview(link.href, paper.title)}
-                                      className="p-1 text-xs bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
-                                    >
-                                      PDF
-                                    </Button>
-                                  </Tooltip>
+                                  <Button
+                                    type="default"
+                                    key={link.key}
+                                    size="small"
+                                    icon={<FilePdfOutlined />}
+                                    onClick={() => handlePdfPreview(link.href, paper.title)}
+                                    className="p-1 text-xs bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+                                  >
+                                    PDF
+                                  </Button>
                                 );
                               }
                               
