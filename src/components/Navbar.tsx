@@ -7,7 +7,6 @@ import {
   VideoCameraOutlined,
   SoundOutlined,
   BookOutlined,
-  PictureOutlined,
   UserOutlined,
   LogoutOutlined,
   MenuOutlined,
