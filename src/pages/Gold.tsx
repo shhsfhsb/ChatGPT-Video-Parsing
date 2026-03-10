@@ -58,7 +58,7 @@ const Gold: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const isFirstLoadRef = useRef(true)
 
-  const API_BASE = import.meta.env.VITE_GOLD_API_BASE_URL || 'https://gold-backend.chuankangkk.top'
+  const API_BASE = import.meta.env.VITE_GOLD_API_BASE_URL || ''
 
   const updateTime = (): void => {
     const now = new Date()

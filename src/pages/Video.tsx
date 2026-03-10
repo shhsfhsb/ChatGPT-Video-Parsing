@@ -20,23 +20,23 @@ declare global {
 const getApiList = (t: any) => [
   {
     name: t('video.api1'),
-    url: 'https://www.8090g.cn/?url='
+    url: import.meta.env.VITE_VIDEO_PARSE_URL1 || ''
   },
   {
     name: t('video.api2'),
-    url: 'https://jx.xmflv.com/?url='
+    url: import.meta.env.VITE_VIDEO_PARSE_URL2 || ''
   },
   {
     name: t('video.api3'),
-    url: 'https://www.ckplayer.vip/jiexi/?url='
+    url: import.meta.env.VITE_VIDEO_PARSE_URL3 || ''
   },
   {
     name: t('video.api4'),
-    url: 'https://jx.m3u8.tv/jiexi/?url='
+    url: import.meta.env.VITE_VIDEO_PARSE_URL4 || ''
   },
   {
     name: t('video.api5'),
-    url: 'https://jx.playerjy.com/?url='
+    url: import.meta.env.VITE_VIDEO_PARSE_URL5 || ''
   }
 ]
 

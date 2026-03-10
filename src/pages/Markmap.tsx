@@ -40,7 +40,7 @@ const Markmap: React.FC = () => {
   const [apiKey, setApiKey] = useState<string>('')
   const [selectedModel, setSelectedModel] = useState<string>('gpt-4o-mini')
   const [customModel, setCustomModel] = useState<string>('')
-  const [versionCount, setVersionCount] = useState<number>(3)
+  const [versionCount, setVersionCount] = useState<number>(1)
   const [availableModels, setAvailableModels] = useState<string[]>([])
   const [promptModalVisible, setPromptModalVisible] = useState<boolean>(false)
   const [infoModalVisible, setInfoModalVisible] = useState<boolean>(false)

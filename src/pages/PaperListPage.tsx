@@ -208,12 +208,22 @@ const PaperListPage: React.FC = () => {
   const [currentPdfUrl, setCurrentPdfUrl] = useState<string>('');
   const [currentPaperTitle, setCurrentPaperTitle] = useState<string>('');
 
-  const API_PAPERS_URL = import.meta.env.VITE_PAPERS_API_URL || 'https://hf-mirror.com/api'
+  const API_PAPERS_URL = import.meta.env.VITE_PAPERS_API_URL || ''
 
   // 获取每日论文数据
   const fetchDailyPapers = async () => {
     try {
-      const response = await axios.get(`${API_PAPERS_URL}/daily_papers`)
+      // 添加时间戳和缓存控制头，确保获取最新数据
+      const timestamp = Date.now()
+      const response = await axios.get(`${API_PAPERS_URL}/daily_papers`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        params: {
+          _t: timestamp
+        }
+      })
       
       if (response.data && Array.isArray(response.data)) {
         const formattedPapers: PaperDetail[] = response.data.map((item: any) => ({
@@ -256,7 +266,17 @@ const PaperListPage: React.FC = () => {
   // 获取热门数据
   const fetchTrendingPapers = async () => {
     try {
-      const response = await axios.get<RepoData>(`${API_PAPERS_URL}/trending`)
+      // 添加时间戳和缓存控制头，确保获取最新数据
+      const timestamp = Date.now()
+      const response = await axios.get<RepoData>(`${API_PAPERS_URL}/trending`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        params: {
+          _t: timestamp
+        }
+      })
       
       if (response.data?.recentlyTrending && Array.isArray(response.data.recentlyTrending)) {
         const formattedPapers: PaperDetail[] = response.data.recentlyTrending.map((item) => {
