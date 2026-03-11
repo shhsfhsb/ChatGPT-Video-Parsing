@@ -1,8 +1,4 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "framework": null,
-  "regions": ["hkg1"],
   "headers": [
     {
       "source": "/api/(.*)",
