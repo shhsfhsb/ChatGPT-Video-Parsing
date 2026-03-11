@@ -50,6 +50,7 @@ const GPT: React.FC = () => {
   const inputRef = useRef<any>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null)
+  const autoSendTriggerRef = useRef<string | null>(null)
 
   // 初始化 OpenAI 客户端（从环境变量读取配置）
   const openai = new OpenAI({
@@ -137,6 +138,20 @@ const GPT: React.FC = () => {
     initCodeCopyButtons()
     saveMessagesToLocalStorage(messages)
   }, [messages, scrollToBottom, initCodeCopyButtons, saveMessagesToLocalStorage])
+
+  // 监听自动发送触发器
+  useEffect(() => {
+    if (autoSendTriggerRef.current && inputMessage === autoSendTriggerRef.current) {
+      autoSendTriggerRef.current = null
+
+      // 延迟一下确保状态已更新
+      setTimeout(() => {
+        if (inputMessage.trim() && !isStreaming) {
+          sendMessage()
+        }
+      }, 100)
+    }
+  }, [inputMessage, isStreaming])
 
   // 监听流式内容变化
   useEffect(() => {
@@ -332,9 +347,64 @@ If you need more detailed answers, please try again later or contact technical s
       setIsStreaming(false)
       setStreamingContent('')
       abortControllerRef.current = null
+      // 清除url参数
+      window.history.replaceState({}, document.title, window.location.pathname)
       scrollToBottom()
     }
   }
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const paperTitle = urlParams.get('paper')
+    const pdfUrl = urlParams.get('pdf')
+    // 判断是否url上有paper和pdf参数
+    if (paperTitle && pdfUrl) {
+      let content = `
+        论文解读分析，论文链接是：${pdfUrl}，论文标题是：${paperTitle}。
+
+        你是一名AI领域的研究生，目标是深入理解论文的方法部分，包括方法动机、设计逻辑、流程细节、优势与不足，以便学习和在研究中借鉴。你的角色是高效、深入的论文分析师。
+        
+        任务：
+          请在阅读论文（用户提供的论文链接和论文标题）后，围绕以下要点进行总结和分析：
+          0. 翻译摘要原文
+          1. 方法动机
+            a) 作者为什么提出这个方法？阐述其背后的驱动力。
+            b) 现有方法的痛点/不足是什么？具体指出局限性。
+            c) 论文的研究假设或直觉是什么？用简洁语言概括。
+          2. 方法设计
+            a) 给出清晰的方法流程总结（pipeline），逐步解释输入→处理→输出。必须讲清楚每一步的具体操作和技术细节。这一步必须非常细致，这是用户的主要阅读目标。
+            b) 如果涉及模型结构，请描述每个模块的功能与作用，以及它们如何协同工作。
+            c) 如果有公式/算法，请用通俗语言解释它们的意义和在方法中的角色。
+          3. 与其他方法对比
+            a) 本方法和现有主流方法相比，有什么本质不同？
+            b) 创新点在哪里？明确指出贡献度。
+            c) 在什么场景下更适用？分析其适用范围。
+            d) 用表格总结 方法对比（优点/缺点/改进点），确保对比项清晰。
+          4. 实验表现与优势
+            a) 作者如何验证该方法的有效性？描述实验设计和设置。
+            b) 实验结果在哪些指标上超越了对比方法？列出几个最具代表性的关键数据和结论。
+            c) 哪些场景/数据集下优势最明显？提供具体证据。
+            d) 是否有局限性（比如泛化能力、计算开销、对特定数据的依赖）？指出论文中承认或隐含的不足。
+          5. 学习与应用
+            a) 论文是否开源？如果我想实现/复现这个方法，关键步骤是什么？
+            b) 需要注意哪些超参数、数据预处理、训练细节？提供实现层面的建议。
+            c) 该方法能否迁移到其他任务？如果能，如何迁移？
+          6. 总结
+            a) 用一句话概括这个方法的核心思想（不超过50字）。
+            b) 给出一个“速记版pipeline”（使用3-5个关键步骤），方便记忆。这个pipeline不要使用论文使用的专业词汇，而是应当具有自明性，让读者只看pipeline即可大体理解论文内容。不要用比喻，直白的讲出内容。
+        
+        行为和规则：
+          - 语言风格：专业、严谨、逻辑性强，完全采用中文进行回复。
+          - 回复结构：严格按照上述六个大点和其子点进行分析和总结，使用清晰的分段和编号。
+          - 数据来源：所有分析必须基于用户提供的论文内容信息。如果用户没有提供足够信息，可以基于常识进行合理推测，但必须明确指出是推测。
+          - 聚焦核心：重点解析方法（Methodology）部分，避免过度讨论引言和结论。
+          - 输出要求：用户可能不再阅读论文具体内容，而是只阅读你提供的信息，因此请确保你的分析详尽且准确。
+      `
+      setIsStreaming(false)
+      autoSendTriggerRef.current = content
+      setInputMessage(content)
+    }
+  }, [])
 
   // 停止生成
   const stopGeneration = () => {

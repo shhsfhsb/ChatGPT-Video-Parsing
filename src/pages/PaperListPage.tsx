@@ -13,7 +13,8 @@ import {
   DownloadOutlined,
   ProjectOutlined,
   PaperClipOutlined,
-  FilePdfOutlined
+  FilePdfOutlined,
+  OpenAIOutlined,
 } from '@ant-design/icons'
 import { 
   getAuthorNames, 
@@ -436,6 +437,12 @@ const PaperListPage: React.FC = () => {
     }
   }
 
+  // 跳转到ChatGPT对话
+  const toggleChat = (pdfUrl: string, paperTitle: string) => {
+    const chatUrl = `/gpt?paper=${encodeURIComponent(paperTitle)}&pdf=${encodeURIComponent(pdfUrl)}`
+    window.location.href = chatUrl
+  }
+
   // 关闭PDF弹窗
   const handlePdfModalClose = () => {
     setPdfModalVisible(false)
@@ -828,16 +835,28 @@ const PaperListPage: React.FC = () => {
                               // 如果是flag为true的链接，显示PDF预览按钮
                               if (link.flag) {
                                 return (
-                                  <Button
-                                    type="default"
-                                    key={link.key}
-                                    size="small"
-                                    icon={<FilePdfOutlined />}
-                                    onClick={() => handlePdfPreview(link.href, paper.title)}
-                                    className="p-1 text-xs bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
-                                  >
-                                    PDF
-                                  </Button>
+                                  <>
+                                    <Button
+                                      type="default"
+                                      key={link.key}
+                                      size="small"
+                                      icon={<FilePdfOutlined />}
+                                      onClick={() => handlePdfPreview(link.href, paper.title)}
+                                      className="p-1 text-xs bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+                                    >
+                                      PDF
+                                    </Button>
+                                    <Button
+                                      type="default"
+                                      key={link.key}
+                                      size="small"
+                                      icon={<OpenAIOutlined />}
+                                      onClick={() => toggleChat(link.href, paper.title)}
+                                      className="p-1 text-xs bg-blue-50 text-black border-black-200 hover:bg-gray-200"
+                                    >
+                                      ChatGPT
+                                    </Button>
+                                  </>
                                 );
                               }
                               

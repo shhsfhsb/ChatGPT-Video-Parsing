@@ -298,7 +298,7 @@ app.post('/api/bilibili-download', async (c) => {
       const jsonData = await response.json()
       return c.json(jsonData)
     } else {
-      // 视频文件响应 - 流式转发以支��前端进度显示
+      // 视频文件响应 - 流式转发以支持前端进度显示
       const reader = response.body?.getReader()
 
       if (!reader) {
