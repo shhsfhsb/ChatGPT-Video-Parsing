@@ -502,7 +502,8 @@ const PaperListPage: React.FC = () => {
     }
     
     // 论文链接（如果是arXiv ID）- 这里是摘要链接
-    if (paper.id && paper.id.match(/^\d{4}\.\d{5}$/)) {
+    // 仅在非移动设备上添加摘要链接
+    if (paper.id && paper.id.match(/^\d{4}\.\d{5}$/) && !isMobileDevice()) {
       links.push({
         key: `arxiv-abs-${paper.id}`,
         icon: <PaperClipOutlined />,
