@@ -1,12 +1,32 @@
 import React, { Component, ReactNode } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
+import { initAnalytics } from './sdk/analytics'
 import './assets/css/global.css'
 import './index.css'
 import 'antd/dist/reset.css'
 import 'nprogress/nprogress.css'
 import 'highlight.js/styles/github.css'
 import './i18n/config'
+
+// 初始化埋点SDK
+const analytics = initAnalytics({
+  reportUrl: import.meta.env.VITE_ANALYTICS_REPORT_URL,
+  appId: 'chattyplay', // 应用ID
+  debug: import.meta.env.DEV, // 开发环境开启调试
+  autoTrack: true, // 自动追踪页面浏览
+  collectDevice: true, // 收集设备信息
+  batchConfig: {
+    enabled: true,
+    maxSize: 10,
+    timeout: 5000
+  }
+})
+
+// 全局访问埋点SDK
+if (typeof window !== 'undefined') {
+  (window as any).analytics = analytics
+}
 
 // 声明 Fundebug 全局变量类型
 declare global {
