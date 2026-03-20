@@ -44,4 +44,5 @@ export default {
   extracting: '解析中...',
   extractVideo: '提取视频',
   downloadFormat: '下载格式',
+  reset: '重置',
 }

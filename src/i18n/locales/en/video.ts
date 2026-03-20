@@ -44,4 +44,5 @@ export default {
   extracting: 'Extracting...',
   extractVideo: 'Extract Video',
   downloadFormat: 'Download Format',
+  reset: 'Reset',
 }

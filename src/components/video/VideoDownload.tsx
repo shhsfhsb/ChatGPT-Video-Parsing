@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Input, Button, message, Typography, Card, Spin, Tag, Space, Divider, Progress } from 'antd'
-import { LinkOutlined, DownloadOutlined, LoadingOutlined, PlayCircleOutlined } from '@ant-design/icons'
+import { LinkOutlined, DownloadOutlined, LoadingOutlined, PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 
@@ -773,6 +773,12 @@ const VideoDownload: React.FC = () => {
     return parts.length > 0 ? parts.join(' | ') : '未知编码'
   }
 
+  const handleReset = () => {
+    setVideoUrl('')
+    setVideoInfo(null)
+    setDownloadProgress({})
+  }
+
   const handlePlatformClick = (platform: { name: string; url: string }) => {
     window.open(platform.url, '_blank')
   }
@@ -797,13 +803,22 @@ const VideoDownload: React.FC = () => {
           onPressEnter={handleExtract}
         />
 
-        <ExtractButton
-          icon={loading ? <LoadingOutlined /> : <DownloadOutlined />}
-          onClick={handleExtract}
-          loading={loading}
-        >
-          {loading ? t('video.extracting') : t('video.extractVideo')}
-        </ExtractButton>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <ExtractButton
+            icon={loading ? <LoadingOutlined /> : <DownloadOutlined />}
+            onClick={handleExtract}
+            loading={loading}
+          >
+            {loading ? t('video.extracting') : t('video.extractVideo')}
+          </ExtractButton>
+          <ExtractButton
+            icon={<ReloadOutlined />}
+            onClick={handleReset}
+            style={{ borderRadius: '12px', marginLeft: '12px' }}
+          >
+            {t('video.reset')}
+          </ExtractButton>
+        </div>
       </InputCard>
 
       {loading && (
