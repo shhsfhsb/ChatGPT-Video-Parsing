@@ -1,17 +1,94 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import CryptoJS from 'crypto-js'
+import { Redis } from '@upstash/redis'
 
 const app = new Hono()
 
 // CORS
 app.use('/*', cors())
 
-// ============ 认证相关工具函数 ============
+// ============ 认证相关常量 ============
 
 const JWT_SECRET = 'chattyplay-jwt-secret-2024'
 const PASSWORD_SECRET = 'chattyplay-secret-key-2024'
 const TOKEN_EXPIRY = 7 * 24 * 60 * 60 * 1000 // 7天
+
+// Redis 客户端初始化
+function createRedisClient() {
+  const restUrl = process.env.UPSTASH_REDIS_REST_URL
+  const restToken = process.env.UPSTASH_REDIS_REST_TOKEN
+
+  const url = restUrl
+  const token = restToken
+
+  if (!url || !token) {
+    console.warn('Redis 未配置，用户数据将仅存储在内存中（重启后会丢失）')
+    return null
+  }
+
+  return new Redis({ url, token })
+}
+
+// Redis 实例
+const redis = createRedisClient()
+
+// 用户计数器 key
+const USER_COUNTER_KEY = 'user:id_counter'
+// 用户 Hash key prefix
+const USER_HASH_PREFIX = 'user:'
+
+// Redis 辅助函数
+
+async function getNextUserId(): Promise<number> {
+  if (!redis) return -1
+  const id = await redis.incr(USER_COUNTER_KEY)
+  return id as number
+}
+
+async function getUserById(id: number): Promise<User | null> {
+  if (!redis) return null
+  const data = await redis.hgetall(`${USER_HASH_PREFIX}${id}`)
+  if (!data || Object.keys(data).length === 0) return null
+  return data as unknown as User
+}
+
+async function getUserByUsername(username: string): Promise<User | null> {
+  if (!redis) return null
+  // 扫描所有用户查找用户名匹配的
+  const keys = await redis.keys(`${USER_HASH_PREFIX}*`)
+  for (const key of keys) {
+    const user = await redis.hgetall(key)
+    if (user && (user as any).username === username) {
+      return user as unknown as User
+    }
+  }
+  return null
+}
+
+async function getUserByEmail(email: string): Promise<User | null> {
+  if (!redis) return null
+  const keys = await redis.keys(`${USER_HASH_PREFIX}*`)
+  for (const key of keys) {
+    const user = await redis.hgetall(key)
+    if (user && (user as any).email === email) {
+      return user as unknown as User
+    }
+  }
+  return null
+}
+
+async function createUser(user: User): Promise<void> {
+  if (!redis) return
+  await redis.hset(`${USER_HASH_PREFIX}${user.id}`, user as any)
+}
+
+async function updateUserField(id: number, field: string, value: any): Promise<void> {
+  if (!redis) return
+  await redis.hset(`${USER_HASH_PREFIX}${id}`, { [field]: value } as any)
+}
+
+// ============ 数据类型定义 ============
 
 interface User {
   id: number
@@ -32,21 +109,19 @@ interface UserWithoutPassword {
   last_login?: string
 }
 
-let users: User[] = []
-let userIdCounter = 1
+// ============ 密码工具函数 ============
 
-// 密码哈希
 function hashPassword(password: string): string {
   return CryptoJS.SHA256(password + PASSWORD_SECRET).toString()
 }
 
-// 验证密码
 function verifyPassword(password: string, hashedPassword: string): boolean {
   const hashed = hashPassword(password)
   return hashed === hashedPassword
 }
 
-// JWT Token 生成
+// ============ JWT Token 函数 ============
+
 function generateToken(payload: { userId: number; username: string }): string {
   const tokenPayload = {
     ...payload,
@@ -66,7 +141,6 @@ function generateToken(payload: { userId: number; username: string }): string {
   return `${encodedHeader}.${encodedPayload}.${encodedSignature}`
 }
 
-// JWT Token 验证
 function verifyToken(token: string): { userId: number; username: string } | null {
   try {
     const [encodedHeader, encodedPayload, encodedSignature] = token.split('.')
@@ -75,7 +149,6 @@ function verifyToken(token: string): { userId: number; username: string } | null
       return null
     }
 
-    // 验证签名
     const signature = CryptoJS.HmacSHA256(`${encodedHeader}.${encodedPayload}`, JWT_SECRET).toString()
     const encodedSignatureCheck = base64UrlEncode(signature)
 
@@ -83,10 +156,8 @@ function verifyToken(token: string): { userId: number; username: string } | null
       return null
     }
 
-    // 解析 payload
     const payload = JSON.parse(base64UrlDecode(encodedPayload)) as { userId: number; username: string; exp?: number }
 
-    // 检查过期时间
     if (payload.exp && payload.exp < Date.now()) {
       return null
     }
@@ -124,7 +195,6 @@ app.post('/api/auth/register', async (c) => {
     const body = await c.req.json()
     const { username, password, email } = body
 
-    // 验证必填字段
     if (!username || !password) {
       return c.json({
         success: false,
@@ -132,7 +202,6 @@ app.post('/api/auth/register', async (c) => {
       }, 400)
     }
 
-    // 验证用户名长度
     if (username.length < 3 || username.length > 20) {
       return c.json({
         success: false,
@@ -140,7 +209,6 @@ app.post('/api/auth/register', async (c) => {
       }, 400)
     }
 
-    // 验证密码长度
     if (password.length < 6 || password.length > 20) {
       return c.json({
         success: false,
@@ -148,7 +216,6 @@ app.post('/api/auth/register', async (c) => {
       }, 400)
     }
 
-    // 验证邮箱格式（如果提供）
     if (email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(email)) {
@@ -160,7 +227,7 @@ app.post('/api/auth/register', async (c) => {
     }
 
     // 检查用户名是否已存在
-    const existingUser = users.find(u => u.username === username)
+    const existingUser = await getUserByUsername(username)
     if (existingUser) {
       return c.json({
         success: false,
@@ -168,9 +235,9 @@ app.post('/api/auth/register', async (c) => {
       }, 400)
     }
 
-    // 检查邮箱是否已存在（如果提供）
+    // 检查邮箱是否已存在
     if (email) {
-      const existingEmail = users.find(u => u.email === email)
+      const existingEmail = await getUserByEmail(email)
       if (existingEmail) {
         return c.json({
           success: false,
@@ -179,19 +246,20 @@ app.post('/api/auth/register', async (c) => {
       }
     }
 
-    // 加密密码
-    const hashedPassword = hashPassword(password)
-
     // 创建用户
+    const userId = await getNextUserId()
+    const hashedPassword = hashPassword(password)
+    const createdAt = new Date().toISOString()
+
     const newUser: User = {
-      id: userIdCounter++,
+      id: userId,
       username,
       password: hashedPassword,
       email,
-      created_at: new Date().toISOString()
+      created_at: createdAt
     }
 
-    users.push(newUser)
+    await createUser(newUser)
 
     // 生成 token
     const token = generateToken({
@@ -199,7 +267,6 @@ app.post('/api/auth/register', async (c) => {
       username: newUser.username
     })
 
-    // 返回用户信息（不包含密码）
     const userWithoutPassword: UserWithoutPassword = {
       id: newUser.id,
       username: newUser.username,
@@ -231,7 +298,6 @@ app.post('/api/auth/login', async (c) => {
     const body = await c.req.json()
     const { username, password } = body
 
-    // 验证必填字段
     if (!username || !password) {
       return c.json({
         success: false,
@@ -240,7 +306,7 @@ app.post('/api/auth/login', async (c) => {
     }
 
     // 查找用户
-    const user = users.find(u => u.username === username)
+    const user = await getUserByUsername(username)
     if (!user) {
       return c.json({
         success: false,
@@ -258,7 +324,8 @@ app.post('/api/auth/login', async (c) => {
     }
 
     // 更新最后登录时间
-    user.last_login = new Date().toISOString()
+    const lastLogin = new Date().toISOString()
+    await updateUserField(user.id, 'last_login', lastLogin)
 
     // 生成 token
     const token = generateToken({
@@ -266,14 +333,13 @@ app.post('/api/auth/login', async (c) => {
       username: user.username
     })
 
-    // 返回用户信息（不包含密码）
     const userWithoutPassword: UserWithoutPassword = {
       id: user.id,
       username: user.username,
       email: user.email,
       avatar: user.avatar,
       created_at: user.created_at,
-      last_login: user.last_login
+      last_login: lastLogin
     }
 
     return c.json({
@@ -316,7 +382,7 @@ app.get('/api/auth/me', async (c) => {
     }
 
     // 查找用户
-    const user = users.find(u => u.id === payload.userId)
+    const user = await getUserById(payload.userId)
     if (!user) {
       return c.json({
         success: false,
@@ -324,7 +390,6 @@ app.get('/api/auth/me', async (c) => {
       }, 401)
     }
 
-    // 返回用户信息（不包含密码）
     const userWithoutPassword: UserWithoutPassword = {
       id: user.id,
       username: user.username,
@@ -369,7 +434,6 @@ app.post('/api/resolve', async (c) => {
 
   const responseData = await response.json()
 
-  // 将thumbnail URL替换为代理URL
   if (responseData.thumbnail) {
     responseData.thumbnail = `/api/image-proxy?url=${encodeURIComponent(responseData.thumbnail)}`
   }
