@@ -11,10 +11,12 @@ interface UseWebSocketOptions {
 
 export function useGoofishWebSocket(options: UseWebSocketOptions = {}) {
   const [connected, setConnected] = useState(false)
+  const [connecting, setConnecting] = useState(true)
   const [status, setStatus] = useState<any>(null)
   const [wsInstance, setWsInstance] = useState<WebSocket | null>(null)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const connectionTimerRef = useRef<NodeJS.Timeout | null>(null)
   const mountedRef = useRef(false)
   const { onMessage, onError, reconnectInterval = 5000 } = options
 
@@ -27,24 +29,39 @@ export function useGoofishWebSocket(options: UseWebSocketOptions = {}) {
     const token = getToken()
     if (GOOFISH_USES_REMOTE_BACKEND && !token) {
       console.warn('Goofish WebSocket requires a site account login')
+      setConnecting(false)
       return
     }
 
+    setConnecting(true)
     const protocols = token ? [`chattyplay.jwt.${token}`] : undefined
     const ws = protocols
       ? new WebSocket(GOOFISH_WS_URL, protocols)
       : new WebSocket(GOOFISH_WS_URL)
     wsRef.current = ws
+    connectionTimerRef.current = setTimeout(() => {
+      if (ws.readyState === WebSocket.CONNECTING) ws.close()
+    }, 30000)
 
     ws.onopen = () => {
+      if (connectionTimerRef.current) {
+        clearTimeout(connectionTimerRef.current)
+        connectionTimerRef.current = null
+      }
       console.log('Goofish WebSocket connected')
       setConnected(true)
+      setConnecting(false)
       setWsInstance(ws)
     }
 
     ws.onclose = () => {
+      if (connectionTimerRef.current) {
+        clearTimeout(connectionTimerRef.current)
+        connectionTimerRef.current = null
+      }
       console.log('Goofish WebSocket disconnected')
       setConnected(false)
+      setConnecting(false)
       setWsInstance(null)
 
       // 自动重连
@@ -60,6 +77,7 @@ export function useGoofishWebSocket(options: UseWebSocketOptions = {}) {
 
     ws.onerror = (error) => {
       console.error('Goofish WebSocket error:', error)
+      setConnecting(false)
       onError?.(error)
     }
 
@@ -77,6 +95,10 @@ export function useGoofishWebSocket(options: UseWebSocketOptions = {}) {
   const disconnect = () => {
     if (reconnectTimerRef.current) {
       clearTimeout(reconnectTimerRef.current)
+    }
+    if (connectionTimerRef.current) {
+      clearTimeout(connectionTimerRef.current)
+      connectionTimerRef.current = null
     }
     if (wsRef.current) {
       wsRef.current.close()
@@ -108,6 +130,7 @@ export function useGoofishWebSocket(options: UseWebSocketOptions = {}) {
 
   return {
     connected,
+    connecting,
     status,
     refetchStatus: fetchStatus,
     ws: wsInstance

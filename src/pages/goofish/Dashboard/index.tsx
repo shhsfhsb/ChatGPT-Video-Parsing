@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Row, Col, Statistic, Badge, Space, Alert } from 'antd'
+import { Card, Row, Col, Statistic, Badge, Space, Alert, Spin } from 'antd'
 import { 
   UserOutlined, 
   MessageOutlined, 
@@ -12,7 +12,7 @@ import { GOOFISH_USES_REMOTE_BACKEND } from '@/services/goofish/config'
 import { getToken } from '@/utils/token'
 
 const Dashboard: React.FC = () => {
-  const { connected, status, refetchStatus } = useGoofishWebSocket({
+  const { connected, connecting, status, refetchStatus } = useGoofishWebSocket({
     onMessage: (data) => {
       if (data.type === 'status') {
         refetchStatus()
@@ -46,13 +46,17 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        {/* 警告信息 */}
-        {!connected && (
+        {connecting ? (
+          <div style={{ padding: '16px', textAlign: 'center' }}>
+            <Spin size="small" />
+            <span style={{ marginLeft: 8 }}>正在连接闲鱼服务器...</span>
+          </div>
+        ) : !connected && (
           <Alert
             message={requiresSiteLogin ? '需要站点账号登录' : '服务离线'}
             description={requiresSiteLogin
               ? '远程闲鱼后端需要使用本站用户名和密码登录，Google/GitHub 临时登录无法访问。'
-              : '无法连接到 Goofish 服务器，请检查服务是否正常运行。'}
+              : '无法连接到闲鱼服务器，请检查服务是否正常运行。'}
             type="warning"
             showIcon
             icon={<WarningOutlined />}
